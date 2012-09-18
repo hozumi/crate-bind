@@ -10,8 +10,6 @@
 ;; ********************************************
 
 (declare elem-factory)
-(def elem-id (atom 0))
-(def group-id (atom 0))
 
 (defn dom-attr 
   ([elem attrs]
@@ -27,18 +25,27 @@
    elem))
 
 (defn as-content [parent content]
-  (doseq[c content]
-    (let [child (cond
-                  (nil? c) nil
-                  (map? c) (throw "Maps cannot be used as content")
-                  (string? c) (gdom/createTextNode c)
-                  (vector? c) (elem-factory c)
-                  ;;TODO: there's a bug in clojurescript that prevents seqs from
-                  ;; being considered collections
-                  (seq? c) (as-content parent c)
-                  (.-nodeName c) c)]
-      (when child
-        (gdom/appendChild parent child)))))
+  (let [[k & content] (if (keyword? (first content))
+                        content (cons nil content))
+        binds
+        (apply merge
+               (map
+                (fn [c]
+                  (let [[child binds]
+                        (cond
+                         (nil? c) nil
+                         (map? c) (throw "Maps cannot be used as content")
+                         (string? c) [(gdom/createTextNode c)]
+                         (vector? c) (let [binds (elem-factory c)] [(:el binds) binds])
+                         ;;TODO: there's a bug in clojurescript that prevents seqs from
+                         ;; being considered collections
+                         (seq? c) [nil (as-content parent c)]
+                         (.-nodeName c) [c])]
+                    (when child
+                      (gdom/appendChild parent child))
+                    binds))
+                content))]
+    (if k (assoc binds k parent) binds)))
 
 ;; From Weavejester's Hiccup: https://github.com/weavejester/hiccup/blob/master/src/hiccup/core.clj#L57
 (def ^{:doc "Regular expression that parses a CSS-style id and class from a tag name." :private true}
@@ -64,28 +71,12 @@
       [nsp tag (merge tag-attrs map-attrs) (next content)]
       [nsp tag tag-attrs content])))
 
-(defn parse-content [elem content]
-  (let [attrs (first content)]
-  (if (map? attrs)
-    (do
-      (dom-attr elem attrs)
-      (rest content))
-    content)))
-
 (defn create-elem [nsp tag]
   (. js/document (createElementNS nsp tag)))
 
 (defn elem-factory [tag-def]
   (let [[nsp tag attrs content] (normalize-element tag-def)
-        elem (create-elem nsp tag)]
-    (dom-attr elem (merge attrs {:crateId (swap! elem-id inc)}))
-    (as-content elem content)
-    elem))
-
-(defn html [& tags]
-  (let [res (map elem-factory tags)]
-    (if (second res)
-      res
-      (first res))))
-
-
+        elem (create-elem nsp tag)
+        binds (as-content elem content)]
+    (dom-attr elem attrs)
+    (assoc binds :el elem)))
