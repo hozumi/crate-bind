@@ -22,6 +22,13 @@ Crate-bind is modified version of Crate. With crate-bind you can easily bind ele
 
 ```
 
+## Installation
+project.clj
+
+```clojure
+[crate-bind "0.1.0"]
+```
+
 ## License
 
 Copyright (C) 2011 Chris Granger
