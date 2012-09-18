@@ -1,23 +1,24 @@
-# crate
+# crate-bind
 
-Crate is a ClojureScript implementation of the awesome [Hiccup](https://github.com/weavejester/hiccup/) html templating library.
+[Crate](https://github.com/ibdknox/crate) is a ClojureScript implementation of the awesome [Hiccup](https://github.com/weavejester/hiccup/) html templating library.
+
+Crate-bind is modified version of Crate. With crate-bind you can easily bind elements into a hashmap.
 
 ## Usage
 
 ```clojure
 (ns myapp
- (:use-macros [defpartial])
- (:require [crate.core :as crate]))
+ (:require [crate-bind.core :as crateb]))
 
-(crate/html [:p.woot {:id "blah"} "Hey!"])
-=> <p class="woot" id="blah">Hey!</p>
+(crateb/build [:div])
+=> {:el #<[object HTMLDivElement]>}
 
-(defpartial header []
- [:header
-   [:h1 "My app!"]])
-
-(header)
-=> <header><h1>My app!</h1></header>
+(crateb/build [:div
+                [:span :date-el "2012/9/19"]
+                [:a {:href "/foo"} :link-el "hello"]])
+=> {:el #<[object HTMLDivElement]>,
+    :link-el #<http://localhost:8080/foo>,
+    :date-el #<[object HTMLSpanElement]>}
 
 ```
 
