@@ -9,7 +9,7 @@
 ;; Element creation via Hiccup-like vectors 
 ;; ********************************************
 
-(declare elem-factory)
+(declare build)
 
 (defn dom-attr 
   ([elem attrs]
@@ -36,7 +36,7 @@
                          (nil? c) nil
                          (map? c) (throw "Maps cannot be used as content")
                          (string? c) [(gdom/createTextNode c)]
-                         (vector? c) (let [binds (elem-factory c)] [(:el binds) binds])
+                         (vector? c) (let [binds (build c)] [(:el binds) binds])
                          ;;TODO: there's a bug in clojurescript that prevents seqs from
                          ;; being considered collections
                          (seq? c) [nil (as-content parent c)]
@@ -74,7 +74,7 @@
 (defn create-elem [nsp tag]
   (. js/document (createElementNS nsp tag)))
 
-(defn elem-factory [tag-def]
+(defn build [tag-def]
   (let [[nsp tag attrs content] (normalize-element tag-def)
         elem (create-elem nsp tag)
         binds (as-content elem content)]
