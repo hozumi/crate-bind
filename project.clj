@@ -1,3 +1,2 @@
 (defproject crate-bind "0.1.0-SNAPSHOT"
-  :description "A ClojureScript implementation of Hiccup"
-  :dependencies [[clojure "1.3.0"]])
+  :description "A ClojureScript implementation of Hiccup")
