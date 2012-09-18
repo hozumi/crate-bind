@@ -1,5 +1,5 @@
-(ns crate.tags
-  (:require-macros [crate.macros :as crate]))
+(ns crate-bind.tags
+  (:require-macros [crate-bind.macros :as crate]))
 
 ;; From Weavejester's Hiccup: https://github.com/weavejester/hiccup/blob/master/src/hiccup/core.clj#L284
 (defn add-optional-attrs

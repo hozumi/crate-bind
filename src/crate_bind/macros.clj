@@ -1,4 +1,4 @@
-(ns crate.macros)
+(ns crate-bind.macros)
 
 (defmacro defpartial
   [name params & body]

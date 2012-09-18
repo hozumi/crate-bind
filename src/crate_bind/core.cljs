@@ -1,4 +1,4 @@
-(ns crate.core 
+(ns crate-bind.core
   (:require [goog.dom :as gdom]
             [clojure.string :as string]))
 
